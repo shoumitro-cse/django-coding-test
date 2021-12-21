@@ -47,7 +47,8 @@ class ProductOperations:
             context["product_id"] = product.id
             context["description"] = str(product.description).strip()
             context["images"] = ProductImage.objects.get(product_id=product.id).file_path
-        return self.get_product_variant(context, product.id)
+            return self.get_product_variant(context, product.id)
+        return context
 
     def create_update(self, request):
         data = json.loads(request.body)
