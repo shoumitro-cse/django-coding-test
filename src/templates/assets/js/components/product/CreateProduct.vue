@@ -179,6 +179,7 @@ export default {
 
     // store product into database
     saveProduct() {
+    debugger
       let product = {
         title: this.product_name,
         sku: this.product_sku,
@@ -189,7 +190,7 @@ export default {
       }
 
 
-      axios.post('/product', product).then(response => {
+      axios.post('/product/create/', product).then(response => {
         console.log(response.data);
       }).catch(error => {
         console.log(error);

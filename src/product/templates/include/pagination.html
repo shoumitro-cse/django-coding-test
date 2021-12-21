@@ -1,0 +1,33 @@
+{% load paginate_tag %}
+<nav>
+    {% if page_obj.has_other_pages %}
+        <ul class="pagination justify-content-end pt-1">
+
+
+            {% if page_obj.has_previous %}
+                <li class="page-item prev"><a class="page-link" href="?{% url_replace request 'page' page_obj.previous_page_number %}">
+               &lsaquo;	</a>
+                </li>
+            {% else %}
+                <li class="page-item prev disabled"><a class="page-link" href="javascript:void(0);">  &lsaquo;	 </a></li>
+            {% endif %}
+
+            {% for item in page_obj.paginator|proper_paginate:page_obj.number %}
+                {% if page_obj.number == item %}
+                    <li class="page-item active"><a class="page-link" href="javascript:void(0);">{{ item }}</a></li>
+                {% else %}
+                    <li class="page-item"><a class="page-link" href="?{% url_replace request 'page' item %}">{{ item }}</a></li>
+                {% endif %}
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+                <li class="page-item next"><a class="page-link" href="?{% url_replace request 'page' page_obj.next_page_number %}"> &rsaquo; </a>
+                </li>
+            {% else %}
+                <li class="page-item next disabled"><a class="page-link" href="javascript:void(0);"> &rsaquo; </a></li>
+            {% endif %}
+
+
+        </ul>
+    {% endif %}
+</nav>

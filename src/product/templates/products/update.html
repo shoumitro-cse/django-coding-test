@@ -1,10 +1,10 @@
 {% extends 'backend/base.html' %}
 
-{% block title %} Create Product {% endblock %}
+{% block title %} Update Product {% endblock %}
 
 {% block content %}
 <div class="d-sm-flex align-items-center justify-content-between mb-4">
-    <h1 class="h3 mb-0 text-gray-800">Create Product</h1>
+    <h1 class="h3 mb-0 text-gray-800">Update Product</h1>
     <a href="{% url 'product:create.product' %}" class="float-right btn btn-primary">All Product</a>
 </div>
 
@@ -17,12 +17,12 @@
 
 {% block js %}
     <script>
-        var product_id = '',
-            product_name = '',
-            product_sku = '',
-            description = '',
+        var product_id = '{{ product_id }}',
+            product_name = '{{ title }}',
+            product_sku = '{{ sku }}',
+            description = "{{ description }}",
             images = [],
-            product_variant_prices = [],
-            product_variant = [];
+            product_variant_prices = {{ product_variant_prices|safe }},
+            product_variant = {{ product_variant|safe }};
     </script>
 {% endblock %}

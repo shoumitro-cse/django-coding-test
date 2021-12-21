@@ -13,12 +13,17 @@
     <form action="" method="get" class="card-header">
         <div class="form-row justify-content-between">
             <div class="col-md-2">
-                <input type="text" name="title" placeholder="Product Title" class="form-control">
+                <input type="text" name="title" value="{{  request.GET.title }}" placeholder="Product Title" class="form-control">
             </div>
             <div class="col-md-2">
-                <select name="variant" id="" class="form-control">
+                <select name="variant_title" id="" class="form-control select2">
                     <option selected disabled>--Select A Variant--</option>
-
+                    {% for item in product_variant_list %}
+                        <optgroup label="{{ item.variant__title }}">{{ item.variant__title }}</optgroup>
+                        {% for title in item.variant_title %}
+                            <option {% if request.GET.variant_title|stringformat:"s" == title|stringformat:"s" %} selected {% endif %} value="{{ title }}">{{ title }}</option>
+                        {% endfor %}
+                    {% endfor %}
                 </select>
             </div>
 
@@ -27,13 +32,13 @@
                     <div class="input-group-prepend">
                         <span class="input-group-text">Price Range</span>
                     </div>
-                    <input type="text" name="price_from" aria-label="First name" placeholder="From"
+                    <input type="text" value="{{  request.GET.price_from }}" name="price_from" aria-label="First name" placeholder="From"
                            class="form-control">
-                    <input type="text" name="price_to" aria-label="Last name" placeholder="To" class="form-control">
+                    <input type="text" name="price_to" value="{{  request.GET.price_to }}" aria-label="Last name" placeholder="To" class="form-control">
                 </div>
             </div>
             <div class="col-md-2">
-                <input type="date" name="date" placeholder="Date" class="form-control">
+                <input type="date" value="{{  request.GET.created|date:"m/d/Y"}}" name="created" placeholder="Date" class="form-control">
             </div>
             <div class="col-md-1">
                 <button type="submit" class="btn btn-primary float-right"><i class="fa fa-search"></i></button>
@@ -55,32 +60,37 @@
                 </thead>
 
                 <tbody>
-                <tr>
-                    <td>1</td>
-                    <td>T-Shirt <br> Created at : 25-Aug-2020</td>
-                    <td>Quality product in low cost</td>
-                    <td>
-                        <dl class="row mb-0" style="height: 80px; overflow: hidden" id="variant">
 
+                {% for obj in object_list %}
+                <tr>
+                    <td>{{ obj.id }}</td>
+                    <td>{{ obj.title }} <br> Created at : {{ obj.created|date:"d-M-Y" }}</td>
+                    <td>{{ obj.description }}</td>
+                    <td>
+                        <dl class="row mb-0" style="height: 80px; overflow: hidden" id="variant_{{ obj.id }}">
+                            {% for item in obj.product_variant_prices.all %}
                             <dt class="col-sm-3 pb-0">
-                                SM/ Red/ V-Nick
+                                {{ item.title }}
                             </dt>
                             <dd class="col-sm-9">
                                 <dl class="row mb-0">
-                                    <dt class="col-sm-4 pb-0">Price : 200.0</dt>
-                                    <dd class="col-sm-8 pb-0">InStock : 50.</dd>
+                                    <dt class="col-sm-4 pb-0">Price :  {{ item.price }}</dt>
+                                    <dd class="col-sm-8 pb-0">InStock :  {{ item.stock }}</dd>
                                 </dl>
                             </dd>
+                            {% endfor %}
                         </dl>
-                        <button onclick="$('#variant').toggleClass('h-auto')" class="btn btn-sm btn-link">Show more
+                        <button onclick="$('#variant_{{ obj.id }}').toggleClass('h-auto')" class="btn btn-sm btn-link">Show more
                         </button>
                     </td>
                     <td>
                         <div class="btn-group btn-group-sm">
-                            <a href="" class="btn btn-success">Edit</a>
+                            <a href="{% url 'product:update.product' obj.id %}" class="btn btn-success">Edit</a>
                         </div>
                     </td>
                 </tr>
+                {% endfor %}
+
                 </tbody>
 
             </table>
@@ -91,10 +101,16 @@
     <div class="card-footer">
         <div class="row justify-content-between">
             <div class="col-md-6">
-                <p>Showing 1 to 10 out of 100</p>
+                <div class="pagination">
+                <span class="page-links">
+                    <span class="page-current">
+                      Showing 1 to {{ page_obj.number }} out of {{ page_obj.paginator.num_pages }}.
+                    </span>
+                </span>
+               </div>
             </div>
             <div class="col-md-2">
-
+                 {% include 'include/pagination.html' %}
             </div>
         </div>
     </div>
