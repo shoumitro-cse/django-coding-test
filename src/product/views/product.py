@@ -50,7 +50,7 @@ class ProductOperations:
             product.description = description
             product.sku = sku
             product.save()
-            for product_variant in product.product_variants.all():
+            for product_variant in ProductVariant.objects.filter(product_id=product.id):
                 product_variant.delete()
             ProductImage.objects.filter(product_id=product.id).update(file_path=product_image)
 
