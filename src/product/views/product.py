@@ -11,6 +11,32 @@ from product.models import Variant, Product, ProductImage, ProductVariant, Produ
 
 class ProductOperations:
 
+    def get_product_variant(self, context,  product_id):
+        product_variant_list = ProductVariant.objects.filter(product_id=product_id) \
+            .values("id", "variant_title", "variant_id")
+        product_variant = []
+        index = 1
+        first_varinat = second_variant = third_variant = []
+        for item in product_variant_list:
+            if index == 1:
+                variant = first_varinat = str(item["variant_title"]).split(",")
+            elif index == 2:
+                variant = second_variant = str(item["variant_title"]).split(",")
+            elif index == 3:
+                variant = third_variant = str(item["variant_title"]).split(",")
+            product_variant.append({"option": item["variant_id"], "tags": variant})
+            index += 1
+        context["product_variant"] = product_variant
+        title_list = []
+        for first in first_varinat:
+            for second in second_variant:
+                for third in third_variant:
+                    title_list.append({"title": first + "/" + second + "/" + third})
+        product_variant_price_list = list(ProductVariantPrice.objects.filter(product_id=product_id) \
+                                          .values("price", "stock").order_by("id"))
+        context["product_variant_prices"] = [dict(a, **b) for a, b in zip(title_list, product_variant_price_list)]
+        return context
+
     def get_initial_data(self, context, product_id=None):
         variants = Variant.objects.filter(active=True).values('id', 'title')
         context['product'] = True
@@ -21,31 +47,8 @@ class ProductOperations:
             context["sku"] = product.sku
             context["product_id"] = product.id
             context["description"] = str(product.description).strip()
-            # context["images"] = ProductImage.objects.get(product_id=product.id).file_path
-            product_variant_list = ProductVariant.objects.filter(product_id=product.id) \
-                .values("id", "variant_title", "variant_id")
-            product_variant = []
-            index = 1
-            first_varinat = second_variant = third_variant = []
-            for item in product_variant_list:
-                if index == 1:
-                    variant = first_varinat = str(item["variant_title"]).split(",")
-                elif index == 2:
-                    variant = second_variant = str(item["variant_title"]).split(",")
-                elif index == 3:
-                    variant = third_variant = str(item["variant_title"]).split(",")
-                product_variant.append({"option": item["variant_id"], "tags": variant})
-                index += 1
-            context["product_variant"] = product_variant
-            title_list = []
-            for first in first_varinat:
-                for second in second_variant:
-                    for third in third_variant:
-                        title_list.append({"title": first + "/" + second + "/" + third})
-            product_variant_price_list = list(ProductVariantPrice.objects.filter(product_id=product.id)\
-                                              .values("price", "stock").order_by("id"))
-            context["product_variant_prices"] = [dict(a, **b) for a, b in zip(title_list, product_variant_price_list)]
-        return context
+            context["images"] = ProductImage.objects.get(product_id=product.id).file_path
+        return self.get_product_variant(context, product.id)
 
     def create_update(self, request):
         data = json.loads(request.body)

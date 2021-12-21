@@ -34,5 +34,4 @@ def proper_paginate(paginator, current_page, neighbors=2):
 
 @register.filter(name='get_product_variant_prices')
 def get_product_variant_prices(product):
-    operation = ProductOperations()
-    return operation.get_initial_data({}, product.id)["product_variant_prices"]
+    return ProductOperations().get_product_variant({}, product.id)["product_variant_prices"]
