@@ -1,6 +1,5 @@
 import json
 
-from django.db.models import Count
 from django.views import generic
 from django.http import JsonResponse
 from django.views.generic import ListView
@@ -125,8 +124,16 @@ class ProductListView(ListView):
         context = super().get_context_data(**kwargs)
         context['product'] = True
         product_variant_list = ProductVariant.objects.all().values("variant_title", "variant__title").distinct()
-        for product_variant in product_variant_list:
-            product_variant["variant_title"] = str(product_variant["variant_title"]).split(",")
-        context['product_variant_list'] = product_variant_list
-        # print(product_variant_list)
+        product_variants = []
+        for variant in Variant.objects.all():
+            variant_list = []
+            for item in product_variant_list:
+                if str(item["variant__title"]).strip().lower() == str(variant.title).strip().lower():
+                    variant_list.extend(str(item["variant_title"]).split(","))
+            product_variants.append({
+                "variant_title": variant.title,
+                "variant_list": list(dict.fromkeys(variant_list)),
+            })
+        context['product_variant_list'] = product_variants
+        print(context['product_variant_list'])
         return context

@@ -21,9 +21,10 @@
                 <select name="variant_title" id="" class="form-control select2">
                     <option selected disabled>--Select A Variant--</option>
                     {% for item in product_variant_list %}
-                        <optgroup label="{{ item.variant__title }}">{{ item.variant__title }}</optgroup>
-                        {% for title in item.variant_title %}
-                            <option {% if request.GET.variant_title|stringformat:"s" == title|stringformat:"s" %} selected {% endif %} value="{{ title }}">{{ title }}</option>
+                        <optgroup label="{{ item.variant_title }}">{{ item.variant_title }}</optgroup>
+                        {% for title in item.variant_list %}
+                            <option {% if request.GET.variant_title|stringformat:"s" == title|stringformat:"s" %} selected {% endif %}
+                                    value="{{ title }}">{{ title }}</option>
                         {% endfor %}
                     {% endfor %}
                 </select>
