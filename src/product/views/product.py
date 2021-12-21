@@ -136,5 +136,4 @@ class ProductListView(ListView):
                 "variant_list": list(dict.fromkeys(variant_list)),
             })
         context['product_variant_list'] = product_variants
-        print(context['product_variant_list'])
         return context
