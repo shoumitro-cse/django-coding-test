@@ -1,5 +1,7 @@
 {% extends 'backend/base.html' %}
 
+{% load paginate_tag %}
+
 {% block title %} Product List {% endblock %}
 
 {% block content %}
@@ -68,7 +70,7 @@
                     <td>{{ obj.description }}</td>
                     <td>
                         <dl class="row mb-0" style="height: 80px; overflow: hidden" id="variant_{{ obj.id }}">
-                            {% for item in obj.product_variant_prices.all %}
+                            {% for item in obj|get_product_variant_prices %}
                             <dt class="col-sm-3 pb-0">
                                 {{ item.title }}
                             </dt>

@@ -25,12 +25,26 @@ class ProductOperations:
             product_variant_list = ProductVariant.objects.filter(product_id=product.id) \
                 .values("id", "variant_title", "variant_id")
             product_variant = []
+            index = 1
+            first_varinat = second_variant = third_variant = []
             for item in product_variant_list:
-                product_variant.append({"option": item["variant_id"],
-                                        "tags": str(item["variant_title"]).split(",")})
+                if index == 1:
+                    variant = first_varinat = str(item["variant_title"]).split(",")
+                elif index == 2:
+                    variant = second_variant = str(item["variant_title"]).split(",")
+                elif index == 3:
+                    variant = third_variant = str(item["variant_title"]).split(",")
+                product_variant.append({"option": item["variant_id"], "tags": variant})
+                index += 1
             context["product_variant"] = product_variant
-            context["product_variant_prices"] = list(ProductVariantPrice.objects.filter(product_id=product.id) \
-                                                     .values("title", "price", "stock"))
+            title_list = []
+            for first in first_varinat:
+                for second in second_variant:
+                    for third in third_variant:
+                        title_list.append({"title": first + "/" + second + "/" + third})
+            product_variant_price_list = list(ProductVariantPrice.objects.filter(product_id=product.id)\
+                                              .values("price", "stock").order_by("id"))
+            context["product_variant_prices"] = [dict(a, **b) for a, b in zip(title_list, product_variant_price_list)]
         return context
 
     def create_update(self, request):
@@ -70,8 +84,8 @@ class ProductOperations:
 
         product_variant_price_list = data.get("product_variant_prices")
         for variant_price in product_variant_price_list:
-            data = {"title": variant_price["title"], "price": float(variant_price["price"]),
-                    "stock": float(variant_price["stock"]), "product_id": product.id}
+            data = {"price": float(variant_price["price"]), "stock": float(variant_price["stock"]),
+                    "product_id": product.id}
             data.update(product_variant)
             ProductVariantPrice.objects.create(**data)
 

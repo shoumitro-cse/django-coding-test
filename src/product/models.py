@@ -28,7 +28,6 @@ class ProductVariant(models.Model):
 
 
 class ProductVariantPrice(models.Model):
-    title = models.CharField(max_length=255)
     product_variant_one = models.ForeignKey(ProductVariant, on_delete=models.CASCADE,
                                             related_name='product_variant_one')
     product_variant_two = models.ForeignKey(ProductVariant, on_delete=models.CASCADE,

@@ -1,4 +1,7 @@
 from django import template
+
+from product.views.product import ProductOperations
+
 register = template.Library()
 
 
@@ -27,3 +30,9 @@ def proper_paginate(paginator, current_page, neighbors=2):
         page_list = [f for f in range(start_index, end_index + 1)]
         return page_list[:(2 * neighbors + 1)]
     return paginator.page_range
+
+
+@register.filter(name='get_product_variant_prices')
+def get_product_variant_prices(product):
+    operation = ProductOperations()
+    return operation.get_initial_data({}, product.id)["product_variant_prices"]
